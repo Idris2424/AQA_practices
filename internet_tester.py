@@ -1,3 +1,5 @@
+import os
+
 from playwright.sync_api import sync_playwright
 
 
@@ -98,6 +100,121 @@ def test_task8(page):
     print(f"✅ Навели на изображение. Текст: {text.strip()}")
 
 
+def test_task9(page):
+    page.goto("https://the-internet.herokuapp.com/")
+    tester = InternetTester(page)
+    tester.navigate_to_example("JavaScript Alerts")
+
+    page.click("button[onclick='jsAlert()']")
+
+    result = page.locator("#result")
+    assert result.text_content() == "You successfully clicked an alert"
+    print(f"✅ Alert принят. Сообщение: {result.text_content()}")
+
+
+def test_task10(page):
+    page.goto("https://the-internet.herokuapp.com/")
+    tester = InternetTester(page)
+    tester.navigate_to_example("File Upload")
+
+    with open("test_upload.txt", "w") as f:
+        f.write("Hello Playwright")
+
+    page.set_input_files("#file-upload", "test_upload.txt")
+    page.click("#file-submit")
+
+    uploaded_file = page.locator("#uploaded-files")
+    assert "test_upload.txt" in uploaded_file.text_content()
+
+    print(f"✅ Файл загружен: test_upload.txt")
+
+    os.remove("test_upload.txt")
+
+
+def test_task11(page):
+    page.goto("https://the-internet.herokuapp.com/")
+    tester = InternetTester(page)
+    tester.navigate_to_example("Dynamic Loading")
+
+    page.click("//*[@id='content']/div/a[1]")
+
+    page.click("//*[@id='start']/button")
+
+    page.wait_for_selector("//*[@id='finish']/h4", state="visible")
+    text = page.locator("//*[@id='finish']/h4").text_content()
+
+    assert text == "Hello World!"
+    print(f"✅ Элемент появился: {text}")
+
+
+def test_task12(page):
+    results = {}
+
+    page.goto("https://the-internet.herokuapp.com/")
+    tester = InternetTester(page)
+
+    try:
+        tester.navigate_to_example("Form Authentication")
+        page.fill("#username", "tomsmith")
+        page.fill("#password", "SuperSecretPassword!")
+        page.click("button:has-text('Login')")
+        page.click("//*[@id='content']/div/a")
+        page.screenshot(path="screenshots/form_auth.png")
+        results["Form Authentication"] = "✅"
+    except:
+        results["Form Authentication"] = "❌"
+
+    try:
+        page.goto("https://the-internet.herokuapp.com/")
+        tester.navigate_to_example("Checkboxes")
+        checkboxes = page.locator("input[type='checkbox']")
+        checkboxes.nth(0).check()
+        checkboxes.nth(1).uncheck()
+        page.screenshot(path="screenshots/checkboxes.png")
+        results["Checkboxes"] = "✅"
+    except:
+        results["Checkboxes"] = "❌"
+
+    try:
+        page.goto("https://the-internet.herokuapp.com/")
+        tester.navigate_to_example("Dropdown")
+        dropdown = page.locator("#dropdown")
+        dropdown.select_option("Option 2")
+        page.screenshot(path="screenshots/dropdown.png")
+        results["Dropdown"] = "✅"
+    except:
+        results["Dropdown"] = "❌"
+
+    try:
+        page.goto("https://the-internet.herokuapp.com/")
+        tester.navigate_to_example("Inputs")
+        input_field = page.locator("input[type='number']")
+        input_field.fill("999")
+        page.screenshot(path="screenshots/inputs.png")
+        results["Inputs"] = "✅"
+    except:
+        results["Inputs"] = "❌"
+
+    try:
+        page.goto("https://the-internet.herokuapp.com/")
+        tester.navigate_to_example("Hovers")
+        figure = page.locator("figure").first
+        figure.hover()
+        page.screenshot(path="screenshots/hovers.png")
+        results["Inputs"] = "✅"
+    except:
+        results["Hovers"] = "❌"
+
+    print("\n📊 ОТЧЁТ:")
+    for key, value in results.items():
+        print(f"{value} {key}")
+
+    if all(v == "✅" for v in results.values()):
+        print("\n✅ Все тесты пройдены!")
+    else:
+        print("\n❌ Некоторые тесты не пройдены!")
+
+
 def main():
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False)
@@ -111,6 +228,10 @@ def main():
         test_task6(page)
         test_task7(page)
         test_task8(page)
+        test_task9(page)
+        test_task10(page)
+        test_task11(page)
+        test_task12(page)
 
         browser.close()
 
