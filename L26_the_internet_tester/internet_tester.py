@@ -159,7 +159,7 @@ def test_task12(page):
         page.fill("#password", "SuperSecretPassword!")
         page.click("button:has-text('Login')")
         page.click("//*[@id='content']/div/a")
-        page.screenshot(path="screenshots/form_auth.png")
+        page.screenshot(path="../screenshots/form_auth.png")
         results["Form Authentication"] = "✅"
     except:
         results["Form Authentication"] = "❌"
@@ -170,7 +170,7 @@ def test_task12(page):
         checkboxes = page.locator("input[type='checkbox']")
         checkboxes.nth(0).check()
         checkboxes.nth(1).uncheck()
-        page.screenshot(path="screenshots/checkboxes.png")
+        page.screenshot(path="../screenshots/checkboxes.png")
         results["Checkboxes"] = "✅"
     except:
         results["Checkboxes"] = "❌"
@@ -180,7 +180,7 @@ def test_task12(page):
         tester.navigate_to_example("Dropdown")
         dropdown = page.locator("#dropdown")
         dropdown.select_option("Option 2")
-        page.screenshot(path="screenshots/dropdown.png")
+        page.screenshot(path="../screenshots/dropdown.png")
         results["Dropdown"] = "✅"
     except:
         results["Dropdown"] = "❌"
@@ -190,7 +190,7 @@ def test_task12(page):
         tester.navigate_to_example("Inputs")
         input_field = page.locator("input[type='number']")
         input_field.fill("999")
-        page.screenshot(path="screenshots/inputs.png")
+        page.screenshot(path="../screenshots/inputs.png")
         results["Inputs"] = "✅"
     except:
         results["Inputs"] = "❌"
